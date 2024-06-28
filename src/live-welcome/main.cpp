@@ -31,49 +31,10 @@
 
 #include "runner.h"
 
-static void loadQtTranslations()
-{
-#ifndef QT_NO_TRANSLATION
-    QString locale = QLocale::system().name();
-
-    // Load Qt translations
-    QTranslator *qtTranslator = new QTranslator(qApp);
-    if (qtTranslator->load(QStringLiteral("qt_%1").arg(locale), QLibraryInfo::location(QLibraryInfo::TranslationsPath))) {
-        qApp->installTranslator(qtTranslator);
-    } else {
-        delete qtTranslator;
-    }
-#endif
-}
-
-static void loadTranslations()
-{
-#ifndef QT_NO_TRANSLATION
-    QString locale = QLocale::system().name();
-
-    // Find the translations directory
-    const QString path = QStringLiteral("liri-live-welcome/translations");
-    const QString translationsDir =
-            QStandardPaths::locate(QStandardPaths::GenericDataLocation,
-                                   path,
-                                   QStandardPaths::LocateDirectory);
-
-    // Load shell translations
-    QTranslator *appTranslator = new QTranslator(qGuiApp);
-    if (appTranslator->load(QStringLiteral("%1/liri-live-welcome_%2").arg(translationsDir, locale))) {
-        QCoreApplication::installTranslator(appTranslator);
-    } else if (locale == QStringLiteral("C") ||
-               locale.startsWith(QStringLiteral("en"))) {
-        // English is the default, it's translated anyway
-        delete appTranslator;
-    }
-#endif
-}
+using namespace Qt::StringLiterals;
 
 int main(int argc, char *argv[])
 {
-    QCoreApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
-
     // Setup application
     QGuiApplication app(argc, argv);
     app.setApplicationName(QStringLiteral("Live Welcome"));
@@ -84,13 +45,23 @@ int main(int argc, char *argv[])
 
     QQuickStyle::setStyle(QStringLiteral("Material"));
 
-    // Load translations
-    loadQtTranslations();
-    loadTranslations();
+#ifndef QT_NO_TRANSLATION
+    // Load Qt translations
+    QTranslator qtTranslator;
+    if (qtTranslator.load(QLocale(), "qt"_L1, "_"_L1,
+                          QLibraryInfo::path(QLibraryInfo::TranslationsPath)))
+        app.installTranslator(&qtTranslator);
+
+    // Load translations from resources
+    QTranslator translator;
+    if (translator.load(QLocale(), "liri-live-welcome"_L1, "_"_L1, ":/qt/qml/io/liri/LiveWelcome/i18n"_L1))
+        QCoreApplication::installTranslator(&translator);
+#endif
 
     // Load UI
-    QQmlApplicationEngine engine(QUrl(QStringLiteral("qrc:/qml/main.qml")));
+    QQmlApplicationEngine engine;
     engine.rootContext()->setContextProperty(QStringLiteral("Runner"), new Runner(&engine));
+    engine.loadFromModule("io.liri.LiveWelcome", "Main");
 
     return app.exec();
 }

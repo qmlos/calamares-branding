@@ -26,8 +26,8 @@ include(KDECompilerSettings NO_POLICY_SCOPE)
 ## CMake settings:
 include(KDECMakeSettings)
 
-## Find Qt 5:
-find_package(Qt6
+## Find Qt:
+find_package(Qt6 "6.7"
     REQUIRED
     COMPONENTS
         Core
@@ -37,6 +37,11 @@ find_package(Qt6
         QuickControls2
         LinguistTools
 )
+
+# Set policies for Qt:
+if(QT_KNOWN_POLICY_QTP0001)
+    qt_policy(SET QTP0001 NEW)
+endif()
 
 ## Add subdirectories:
 add_subdirectory(branding)
