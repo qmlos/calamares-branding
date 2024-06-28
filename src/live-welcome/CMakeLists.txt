@@ -1,23 +1,26 @@
-# Translations
-file(GLOB LiveWelcome_TRANSLATIONS "${CMAKE_CURRENT_SOURCE_DIR}/translations/*_*.ts")
-qt6_add_translation(LiveWelcome_QM_FILES ${LiveWelcome_TRANSLATIONS})
-install(FILES ${LiveWelcome_QM_FILES}
-        DESTINATION "${KDE_INSTALL_DATADIR}/liri-live-welcome/translations")
-
-set(SOURCES
-    main.cpp
-    runner.cpp runner.h
-    io.liri.LiveWelcome.desktop
-)
-
-qt_add_resources(SOURCES live-welcome.qrc)
 qt6_add_executable(LiveWelcome
     MANUAL_FINALIZATION
-    ${SOURCES}
-    ${LiveWelcome_QM_FILES}
+    main.cpp
+    runner.cpp runner.h
+)
+set_target_properties(LiveWelcome PROPERTIES OUTPUT_NAME "liri-live-welcome")
+
+set_source_files_properties(qml/Main.qml PROPERTIES
+    QT_RESOURCE_ALIAS Main.qml
+)
+qt6_add_qml_module(LiveWelcome
+    URI io.liri.LiveWelcome
+    VERSION 1.0
+    QML_FILES qml/Main.qml
 )
 
-set_target_properties(LiveWelcome PROPERTIES OUTPUT_NAME "liri-live-welcome")
+file(GLOB ts_files "${CMAKE_CURRENT_SOURCE_DIR}/translations/*_*.ts")
+qt6_add_translations(LiveWelcome
+    TS_FILE_BASE "liri-live-welcome"
+    TS_FILE_DIR "translations"
+    TS_FILES ${ts_files}
+    RESOURCE_PREFIX "/qt/qml/io/liri/LiveWelcome/i18n"
+)
 
 target_compile_definitions(LiveWelcome PRIVATE VERSION="${PROJECT_VERSION}")
 

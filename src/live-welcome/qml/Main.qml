@@ -21,13 +21,12 @@
  * $END_LICENSE$
  ***************************************************************************/
 
-import QtQuick 2.0
-import QtQuick.Layouts 1.0
-import QtQuick.Controls 2.0
-import QtQuick.Controls.Material 2.0
-import Fluid.Controls 1.0 as FluidControls
+import QtQuick
+import QtQuick.Layouts
+import QtQuick.Controls.Material
+import Fluid as Fluid
 
-ApplicationWindow {
+Fluid.ApplicationWindow {
     title: qsTr("Welcome to Liri OS")
     width: 600
     height: 400
@@ -42,8 +41,8 @@ ApplicationWindow {
         anchors.fill: parent
         spacing: 0
 
-        FluidControls.Placeholder {
-            icon.source: FluidControls.Utils.iconUrl("hardware/computer")
+        Fluid.Placeholder {
+            icon.source: Fluid.Utils.iconUrl("hardware/computer")
             text: qsTr("Welcome to Liri OS")
             subText: qsTr("You are currently running Liri OS from live media.\nYou can install Liri OS now, or launch \"Install to Hard Drive\" later.")
 
@@ -56,14 +55,14 @@ ApplicationWindow {
             Layout.fillHeight: true
         }
 
-        FluidControls.ListItem {
-            icon.source: FluidControls.Utils.iconUrl("action/exit_to_app")
+        Fluid.ListItem {
+            icon.source: Fluid.Utils.iconUrl("action/exit_to_app")
             text: qsTr("Try Liri OS")
             onClicked: Qt.quit()
         }
 
-        FluidControls.ListItem {
-            icon.source: FluidControls.Utils.iconUrl("file/file_download")
+        Fluid.ListItem {
+            icon.source: Fluid.Utils.iconUrl("file/file_download")
             text: qsTr("Install to Hard Drive")
             onClicked: {
                 Runner.run();
